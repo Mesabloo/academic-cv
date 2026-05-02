@@ -1,0 +1,682 @@
+% ============================================================
+%  Academic Résumé — inspired by the rainbow-beamer theme
+%  Requires XeLaTeX or LuaLaTeX
+%  Standard class: article
+% ============================================================
+\documentclass[11pt, a4paper]{article}
+
+% ── Engine check ────────────────────────────────────────────
+\usepackage{iftex}
+\RequireLuaTeX % or swap to \RequireLuaTeX
+
+% ── Page geometry ───────────────────────────────────────────
+\usepackage[
+  top    = 2.0cm,
+  bottom = 2.0cm,
+  left   = 1.4cm,
+  right  = 1.4cm,
+]{geometry}
+
+% ── Fonts (mirrors beamerfontthemerainbow.sty) ───────────────
+% Main: Yanone Kaffeesatz (display / headings feel)
+% Sans: Andika            (body text)
+% Mono: Iosevka           (code / technical details)
+%
+% If these fonts are not installed system-wide, swap the names
+% for any similar alternatives, e.g.
+%   main → "Cabin" or "Raleway"
+%   sans → "Source Sans Pro"
+%   mono → "Fira Mono"
+\usepackage{fontspec}
+\usepackage[warnings-off={mathtools-colon,mathtools-overbracket}]{unicode-math}
+
+\setmainfont[
+  Path = {fonts/Yanone_Kaffeesatz/},
+  UprightFeatures={
+    LetterSpace=4.2,
+    Weight=400,
+  },
+  BoldFont            =   *,
+  BoldFeatures={
+    LetterSpace=4.2,
+    Weight=900,
+  },
+  ItalicFont = *,
+  ItalicFeatures={
+      LetterSpace=4.2,
+      Slant=-5
+    }
+]{YanoneKaffeesatz-VariableFont_wght.ttf}
+
+\setsansfont[
+  Path           = {fonts/Andika/},
+  Extension      = .ttf,
+  Ligatures      = TeX,
+  UprightFont    = *-Regular,
+  BoldFont       = *-Bold,
+  ItalicFont     = *-Italic,
+  BoldItalicFont = *-BoldItalic
+]{Andika}
+
+% \setmonofont[
+%   UprightFont    = *-Regular,
+%   ItalicFont     = *-Italic,
+%   BoldFont       = *-Bold,
+%   BoldItalicFont = *-BoldItalic,
+% ]{Iosevka}
+
+% Use the sans font for body text (matches the beamer theme's
+% Andika-as-body approach; swap \rmfamily if you prefer serif).
+\renewcommand{\familydefault}{\sfdefault}
+
+% ── Colors (from beamercolorthemerainbow.sty) ───────────────
+\usepackage[dvipsnames]{xcolor}
+
+\definecolor{cvgreen}     {HTML}{89B374}
+\definecolor{cvlightgreen}{HTML}{B5C266}
+\definecolor{cvwhite}     {HTML}{E4E4E4}
+\definecolor{cvdarkblue}  {HTML}{387490}
+\definecolor{cvnightblue} {HTML}{303042}
+\definecolor{cvblue}      {HTML}{01ACB6}
+\definecolor{cvblack}     {HTML}{2B2B2D}
+\definecolor{cvviolet}    {HTML}{837694}
+\definecolor{cvpurple}    {HTML}{6e2c5a}
+\definecolor{cvred}       {HTML}{F2503B}
+\definecolor{cvyellow}    {HTML}{FEBE28}
+\definecolor{cvdarkgray}  {HTML}{655a62}
+\definecolor{cvpink}      {HTML}{f67598}
+\definecolor{cvorange}    {HTML}{e9a02f}
+\definecolor{cvmint}      {HTML}{3eb9a5}
+
+% ── Packages ────────────────────────────────────────────────
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{mdframed}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{microtype}
+\usepackage{fontawesome5}
+\usepackage[skip=4pt, indent=0pt]{parskip}
+\usepackage{etoolbox}
+
+\hypersetup{
+  colorlinks = true,
+  urlcolor   = cvdarkblue,
+  linkcolor  = cvdarkblue,
+}
+
+% ── No page numbers by default ──────────────────────────────
+\pagestyle{empty}
+
+% Main text color (after all packages are loaded)
+\AtBeginDocument{\color{cvblack}}
+
+% ── Rainbow rule (mirrors the gradient used in the theme) ───
+% Declared once in the preamble after tikz is loaded.
+% Uses explicit RGB so it works without pgf color name lookup at
+% shading-declaration time (color names aren't resolved yet then).
+\pgfdeclareverticalshading{rainbowcv}{100bp}{%
+  rgb(0bp)=(0.949,0.314,0.231);%   cvred    #F2503B
+  rgb(14bp)=(0.996,0.745,0.157);%  cvyellow #FEBE28
+  rgb(28bp)=(0.537,0.702,0.455);%  cvgreen  #89B374
+  rgb(42bp)=(0.004,0.675,0.714);%  cvblue   #01ACB6
+  rgb(56bp)=(0.220,0.455,0.565);%  cvdarkblue #387490
+  rgb(70bp)=(0.514,0.463,0.580);%  cvviolet #837694
+  rgb(84bp)=(0.431,0.173,0.353);%  cvpurple #6e2c5a
+  rgb(100bp)=(0.431,0.173,0.353)%  cvpurple
+}
+
+% Usage: \rainbowrule  or  \rainbowrule[3pt]
+% Drawn inline with zero surrounding space; titlesec after-code
+% adds its own separation via \titlespacing.
+\newcommand{\rainbowrule}[1][2pt]{%
+  \noindent\textcolor{cvblue}{\rule{\linewidth}{#1}}%
+}
+
+% ── Section heading style ───────────────────────────────────
+\newfontfamily\headingfont[
+  Path = {fonts/Yanone_Kaffeesatz/},
+  UprightFeatures = {LetterSpace=5, Weight=700},
+]{YanoneKaffeesatz-VariableFont_wght.ttf}
+
+% Section: title on the left, rainbow rule fills the rest of the line.
+% \titleformat's "before-code" (5th arg) runs before the title text,
+% and "after-code" (6th arg in []) runs after. We put the rule in the
+% after-code as a negative-vspace trick to pull it up to the title baseline,
+% but that gives a separate line. Instead we abuse the label (3rd arg) to
+% be empty and use the format (2nd arg) + a \dotfill-style construction
+% by redefining \section via a wrapper macro.
+%
+% Cleanest approach: patch \section to a custom macro that typesets
+% title + leaders in a single \hbox.
+\titleformat{\section}{\LARGE\bfseries\color{cvnightblue}\headingfont}{}{}{}[]
+\titlespacing*{\section}{0pt}{16pt}{4pt}
+
+\let\oldsection\section
+\renewcommand{\section}[1]{%
+  \oldsection*{%
+    \begin{tabularx}{\linewidth}{@{} l @{\hspace{6pt}} X @{}}
+      #1 &
+      \raisebox{0.4ex}{\rainbowrule[1.5pt]}
+    \end{tabularx}%
+  }%
+  \addcontentsline{toc}{section}{#1}%
+}
+
+\titlespacing*{\section}{0pt}{16pt}{4pt}
+
+\titleformat{\subsection}
+  {\large\bfseries\color{cvdarkblue}\sffamily}
+  {}
+  {0pt}
+  {}
+
+\titlespacing*{\subsection}{0pt}{6pt}{4pt}
+
+% ── CV entry macros ─────────────────────────────────────────
+
+% Uniform inter-entry gap used by all CV macros.
+\newlength{\cvskip}
+\setlength{\cvskip}{10pt}
+
+% ── Timeline environment ─────────────────────────────────────
+% Strategy: savebox pre-measurement.
+%
+% For each entry:
+%   1. Typeset the right-column content into \cvtlbox (a savebox).
+%   2. Measure its total height = \ht\cvtlbox + \dp\cvtlbox.
+%   3. Typeset a two-column tabular:
+%        left  col: TikZ picture whose bar height = measured content height
+%        right col: \usebox{\cvtlbox}
+%
+% The savebox is typeset at the correct text column width, so no overflow.
+% Works across page breaks because every entry is self-contained.
+%
+% Bar extends from the dot downward to the bottom of the content box,
+% plus \cvskip, so consecutive bars connect perfectly.
+% The last entry in a cvtimeline gets a shorter bar (just below the dot).
+
+\newlength{\cvtldot}    \setlength{\cvtldot}{6pt}     % dot diameter
+\newlength{\cvtlindent} \setlength{\cvtlindent}{8pt}   % bar x-offset from left margin
+\newlength{\cvtlgap}    \setlength{\cvtlgap}{10pt}     % gap between bar col and content
+\newlength{\cvtlcol}    % width of bar column (bar + gap)
+\setlength{\cvtlcol}{\dimexpr\cvtlindent+\cvtlgap\relax}
+\newlength{\cvtlcontentw} % computed content column width (set at start of each entry)
+
+\newlength{\cvtlentryht} % height of current entry content box
+\newlength{\cvtldotyoff} % y-offset from top of box to dot centre (positive = downward)
+\newlength{\cvtlbary}    % y-coordinate of bar bottom (from top of box, positive = downward)
+\newsavebox{\cvtlbox}    % savebox for entry content
+
+% Track whether this is the last entry in a timeline.
+% The environment end-code patches the last entry's bar.
+% We use a simple boolean toggled by the environment.
+\newif\ifcvtllast
+\cvtllastfalse
+
+\newenvironment{cvtimeline}{%
+  \par\vspace{2pt}%
+  \setlength{\parskip}{0pt}%  suppress parskip so only \cvskip controls gaps
+  \cvtllastfalse%
+}{%
+  \par\vspace{2pt}%
+}
+
+% Internal macro that typesets a single timeline entry.
+% #1=date  #2=title  #3=org  #4=unused  #5=description
+% #6=boolean: 1 = last entry in group (bar to bottom of content only, no extension)
+%             0 = non-last (bar extends to meet the next entry's dot)
+\newcommand{\cvtlentry}[6]{%
+  \setlength{\fboxsep}{2.5pt}%
+  \setlength{\cvtlcontentw}{\dimexpr\linewidth-\cvtlindent-\cvtlgap\relax}%
+  % ── 1. Typeset content into savebox at the correct width ────
+  \savebox{\cvtlbox}{%
+    \begin{minipage}[t]{\cvtlcontentw}%
+      {\colorbox{cvblue!12}{%
+        \fontsize{8}{9}\selectfont\sffamily\color{cvblue!80!black} #1}}%
+      \smallskip\newline
+      {\normalsize\bfseries\color{cvnightblue} #2}%
+      \ifblank{#3}{}{\newline{\small\itshape\color{cvdarkblue} #3}}%
+      \ifblank{#5}{}{%
+        \newline\vspace{-4pt}%
+        \begin{mdframed}[
+          topline=false,bottomline=false,rightline=false,
+          linewidth=2pt,linecolor=cvdarkblue!30,
+          innerleftmargin=6pt,innerrightmargin=0pt,
+          innertopmargin=1pt,innerbottommargin=1pt,
+          skipabove=0pt,skipbelow=0pt,backgroundcolor=white]%
+          {\footnotesize\color{cvdarkgray} #5}%
+        \end{mdframed}%
+      }%
+    \end{minipage}%
+  }%
+  % ── 2. Geometry ─────────────────────────────────────────────
+  % \ht\cvtlbox = height above the minipage's first-line baseline
+  %             = top-of-box to first-line-baseline
+  % \dp\cvtlbox = depth below that baseline
+  % Total box height = \ht + \dp
+  %
+  % The dot should sit vertically centred in the date badge colorbox.
+  % The colorbox is the first thing in the minipage; its centre is at:
+  %   y_dot = \ht\cvtlbox - \fboxsep - (badge_height/2)
+  % badge_height = font_size*leading + 2*\fboxsep = 9pt + 5pt = 14pt approx.
+  % Simpler and robust: centre of colorbox = \ht\cvtlbox - \fboxsep - 4.5pt
+  % We store y_dot as a length measured from the top of the box (positive downward).
+  %
+  % In TikZ we work with (0,0) at the TOP of the box (achieved via \raisebox),
+  % so dot y-coordinate = -\cvtldotyoff (negative = downward from top).
+  \setlength{\cvtldotyoff}{\dimexpr\fboxsep + 4pt\relax}%  ≈ centre of 8/9pt badge
+  %
+  % Bar length:
+  %   non-last: from dot centre to bottom of next entry's dot
+  %             = (box_height - dot_yoff) + \cvskip + dot_yoff_next
+  %             = \dp\cvtlbox + \ht\cvtlbox - \cvtldotyoff + \cvskip + \cvtldotyoff
+  %             = total_box_height + \cvskip
+  %   last:     from dot centre to bottom of content box
+  %             = total_box_height - \cvtldotyoff
+  \ifnum#6=0\relax
+    \setlength{\cvtlentryht}{\dimexpr\ht\cvtlbox+\dp\cvtlbox+\cvskip\relax}%
+  \else
+    \setlength{\cvtlentryht}{\dimexpr\ht\cvtlbox+\dp\cvtlbox-\cvtldotyoff\relax}%
+  \fi
+  % ── 3. Typeset ──────────────────────────────────────────────
+  % Pre-compute the bar's bottom y-coordinate (from top of box, positive downward).
+  \setlength{\cvtlbary}{\dimexpr\cvtldotyoff+\cvtlentryht\relax}%
+  %
+  % Layout: zero-width gutter on the left containing the bar+dot overlay,
+  % then the content minipage.  No tabular — avoids p{} leading issues.
+  %
+  % \raisebox{\ht\cvtlbox}[0pt][0pt] shifts (0,0) of the tikzpicture to the
+  % TOP of the content box, so all y-offsets are negative (downward).
+  \noindent
+  \hspace{\cvtlindent}%
+  \raisebox{\ht\cvtlbox}[0pt][0pt]{%
+    \makebox[0pt][c]{%
+      \begin{tikzpicture}[baseline=0pt, inner sep=0pt, outer sep=0pt]
+        % bar first (dot will be drawn on top)
+        \draw[cvdarkgray!40, line width=1pt]
+          (0pt, -\cvtldotyoff) -- (0pt, -\cvtlbary);
+        % dot
+        \node[circle, fill=cvblue, minimum size=\cvtldot,
+              inner sep=0pt, outer sep=0pt]
+          at (0pt, -\cvtldotyoff) {};
+      \end{tikzpicture}%
+    }%
+  }%
+  \hspace{\cvtlgap}\usebox{\cvtlbox}%
+  \par\vspace{\cvskip}%
+}
+
+% Public \cventry: forwards to \cvtlentry with last=0.
+% The last entry must be wrapped with \cvlastentry instead,
+% or users can use \cventry and accept a trailing stub bar.
+\newcommand{\cventry}[5]{\cvtlentry{#1}{#2}{#3}{#4}{#5}{0}}
+\newcommand{\cvlastentry}[5]{\cvtlentry{#1}{#2}{#3}{#4}{#5}{1}}
+
+% \cvpub{authors}{title}{venue/journal}{year}{url (optional)}
+\newcommand{\cvpub}[5]{%
+  \noindent
+  {\small
+    \textcolor{cvdarkgray}{#1}. \textbf{\textcolor{cvnightblue}{#2}}.
+    \textit{\textcolor{cvdarkblue}{#3}}, #4.%
+    \ifblank{#5}{}{\enspace\href{#5}{\textcolor{cvblue}{\faLink}}}
+  }\vspace{\cvskip}\par\noindent%
+}
+
+% \cvskillblock{icon}{Category}{tag, tag, ...}
+% Renders a category label with a FontAwesome icon and \cvtag pills.
+% Use inside the cvskills environment.
+% Note: uses a minipage so tabularx doesn't mis-scan the cell content.
+\newcommand{\cvskillblock}[3]{%
+  \begin{minipage}[t]{\linewidth}%
+    {\fontsize{8}{9}\selectfont\sffamily\color{cvdarkgray}%
+     \textcolor{cvdarkblue}{#1}\enspace\MakeUppercase{#2}}%
+    \vspace{3pt}\par
+    \setlength{\fboxsep}{3pt}\raggedright\sloppy
+    #3\par
+  \end{minipage}%
+}
+
+% cvskills environment: tinted box, two-column grid via two minipages side by side.
+\newlength{\cvskillcolw}
+\newenvironment{cvskills}{%
+  \begin{mdframed}[
+    topline=false, bottomline=false, leftline=false, rightline=false,
+    backgroundcolor=cvdarkblue!4,
+    innerleftmargin=10pt, innerrightmargin=10pt,
+    innertopmargin=8pt, innerbottommargin=8pt,
+    skipabove=0pt, skipbelow=0pt]%
+  \setlength{\cvskillcolw}{\dimexpr0.5\linewidth-6pt\relax}%
+}{%
+  \end{mdframed}%
+}
+
+% Contact icon helpers
+\newcommand{\cvcontact}[2]{\textcolor{cvdarkblue}{#1}\enspace\href{#2}{#2}}
+\newcommand{\cvemail}[1]{\textcolor{cvdarkblue}{\faEnvelope}\enspace\href{mailto:#1}{#1}}
+\newcommand{\cvphone}[1]{\textcolor{cvdarkblue}{\faPhone*}\enspace #1}
+\newcommand{\cvweb}[2]{\textcolor{cvdarkblue}{\faGlobe}\enspace\href{#1}{#2}}
+\newcommand{\cvgithub}[1]{\textcolor{cvdarkblue}{\faGithub}\enspace\href{https://github.com/#1}{github.com/#1}}
+\newcommand{\cvlinkedin}[1]{\textcolor{cvdarkblue}{\faLinkedin}\enspace\href{https://linkedin.com/in/#1}{in/#1}}
+\newcommand{\cvorcid}[1]{\textcolor{cvdarkblue}{\faOrcid}\enspace\href{https://orcid.org/#1}{#1}}
+
+% ── Pull-quote block (Research Interests) ───────────────────
+% Left accent bar in cvdarkblue, very light tint background.
+\newmdenv[
+  topline    = false,
+  bottomline = false,
+  rightline  = false,
+  leftline   = false,
+  backgroundcolor = cvdarkblue!4,
+  innerleftmargin  = 10pt,
+  innerrightmargin = 8pt,
+  innertopmargin   = 6pt,
+  innerbottommargin= 6pt,
+  skipabove  = 0pt,
+  skipbelow  = 0pt,
+]{pullquote}
+
+% \cvtag{text} — small pill for interest keywords, wraps naturally.
+% Must be used inside \begin{cvtags}...\end{cvtags}.
+\newenvironment{cvtags}{%
+  \begin{sloppypar}\setlength{\fboxsep}{3pt}\raggedright%
+}{%
+  \end{sloppypar}%
+}
+\newcommand{\cvtag}[1]{%
+  {\fontsize{8}{10}\selectfont\sffamily
+   \colorbox{cvblue!12}{\textcolor{cvblue!80!black}{#1}}}%
+  \hspace{4pt plus 2pt minus 1pt}\linebreak[0]%
+}
+
+% ── List style ───────────────────────────────────────────────
+\setlist[itemize]{
+  label       = \textcolor{cvdarkblue}{\bullet},
+  nosep,
+  leftmargin  = 1.4em,
+  topsep      = 2pt,
+  itemsep     = 1pt,
+}
+
+% ============================================================
+%  DOCUMENT
+% ============================================================
+\begin{document}
+
+% ── Header ──────────────────────────────────────────────────
+\begin{center}
+	{\Huge\bfseries\headingfont%
+		\textcolor{cvnightblue}{Ghilain} \textcolor{cvblue}{Bergeron}}
+
+	\vspace{4pt}
+	{\normalsize\color{cvdarkgray} Ph.D.\ Student in Computer Science --- Formal Methods}
+
+	\vspace{1pt}
+	\begin{minipage}{0.9\linewidth}\centering\rainbowrule[1pt]\end{minipage}
+
+	{\small
+	\cvemail{ghilain.bergeron@inria.fr}
+	\quad\textcolor{cvdarkgray}{|}\quad
+	\cvgithub{mesabloo}
+	\quad\textcolor{cvdarkgray}{|}\quad
+	\cvorcid{0009-0008-2814-3480}
+	% \quad\textcolor{cvdarkgray}{|}\quad
+	\cvweb{https://g-bergeron.github.io}{https://g-bergeron.github.io}
+	\quad\textcolor{cvdarkgray}{|}\quad
+	\cvlinkedin{g-bergeron}
+	}
+\end{center}
+
+\vspace{8pt}
+
+% ── Research interests ──────────────────────────────────────
+\section{Research Interests}
+
+\begin{pullquote}
+	% I am a Ph.D.\ student at Inria Nancy in the VeriDis team, advised by
+	% Prof.\ Horatiu Cirstea and Prof.\ Stephan Merz.
+	My research focuses on \textit{compiler correctness}, \textit{programming language semantics},
+	and \textit{formal software verification}, with an emphasis on mechanised proofs in the
+	Lean~4 proof assistant.
+	I am currently working on a formally verified compiler for Distributed PlusCal targeting Go.
+
+	\vspace{6pt}
+	\begin{cvtags}
+		\cvtag{Formal methods}
+		\cvtag{Compiler correctness}
+		\cvtag{Lean 4}
+		\cvtag{PL semantics}
+		\cvtag{Proof assistants}
+		\cvtag{Type theory}
+	\end{cvtags}
+\end{pullquote}
+
+
+% ── Skills ──────────────────────────────────────────────────
+\section{Skills}
+
+\begin{cvskills}
+	\noindent
+	\begin{minipage}[t]{\cvskillcolw}
+		\cvskillblock{\faCertificate}{Proof assistants}{%
+			\cvtag{Lean 4}\cvtag{Isabelle/HOL}\cvtag{Coq/Rocq}\cvtag{Agda}}
+	\end{minipage}%
+	\hspace{12pt}%
+	\begin{minipage}[t]{\cvskillcolw}
+		\cvskillblock{\faCode}{Programming}{%
+			\cvtag{Haskell}\cvtag{Go}\cvtag{Python}\cvtag{Rust}\cvtag{C/C++}}
+	\end{minipage}
+
+	\vspace{8pt}
+
+	\noindent
+	\begin{minipage}[t]{\cvskillcolw}
+		\cvskillblock{\faWrench}{Tools}{%
+			\cvtag{\LaTeX}\cvtag{Git}\cvtag{Nix}}
+	\end{minipage}%
+	\hspace{12pt}%
+	\begin{minipage}[t]{\cvskillcolw}
+		\cvskillblock{\faComments}{Languages}{%
+		\cvtag{French -- {\footnotesize\textit{native}}}\cvtag{English -- {\footnotesize\textit{fluent}}}}
+	\end{minipage}
+\end{cvskills}
+
+% ── Education ───────────────────────────────────────────────
+\section{Education}
+
+\begin{cvtimeline}
+	\cventry{Oct 2023 -- present}
+	{Ph.D.\ in Computer Science}
+	{University of Lorraine --- Inria Nancy, VeriDis Team}
+	{}
+	{\begin{itemize}
+			\item Thesis topic: Generation of distributed programs from formal specifications.
+			\item Advisors: \href{https://members.loria.fr/HCirstea/}{Horatiu Cirstea} and \href{https://members.loria.fr/Stephan.Merz/}{Stephan Merz}.
+		\end{itemize}}
+
+	\cventry{2021 -- 2023}
+	{M.Sc.\ in Computer Science}
+	{University of Lorraine --- Faculté des Sciences et Technologies}
+	{}
+	{}
+
+	\cvlastentry{2018 -- 2021}
+	{B.Sc.\ in Computer Science}
+	{University of Lorraine --- IUT Nancy-Charlemagne \& Faculté des Sciences et Technologies}
+	{}
+	{}
+\end{cvtimeline}
+
+% ── Research experience ─────────────────────────────────────
+\section{Research Experience}
+
+\begin{cvtimeline}
+	\cventry{Mar -- Aug 2023}
+	{Research Internship}
+	{University of Lorraine --- Inria Nancy, VeriDis Team}
+	{}
+	{\begin{itemize}
+			\item Topic: Formalization of a splitting framework for saturation-based calculi in Isabelle/HOL.
+			\item Advisor: \href{https://members.loria.fr/sophie.tourret/}{Sophie Tourret}
+		\end{itemize}}
+
+	\cventry{Jun -- Aug 2021}
+	{Research Internship}
+	{University of Lorraine --- Inria Nancy, MFX Team}
+	{}
+	{\begin{itemize}
+			\item Topic: Development of a formal verification pipeline in C++ for
+			      \href{https://github.com/sylefeb/Silice}{Silice},
+			      a hardware description language, including verification primitives.
+			\item Advisor: \href{https://www.antexel.com/sylefeb/research}{Sylvain Lefebvre}
+		\end{itemize}}
+
+	\cvlastentry{Apr -- Jun 2020}
+	{Research Internship}
+	{University of Lorraine --- Inria Nancy, MFX Team}
+	{}
+	{\begin{itemize}
+			\item Development of a tool in C++ for automatic parameterization of 2D-modelling scripts written in Lua.
+			\item Advisor: \href{https://www.antexel.com/sylefeb/research}{Sylvain Lefebvre}
+		\end{itemize}}
+\end{cvtimeline}
+
+% ── Publications ────────────────────────────────────────────
+\section{Publications}
+
+\subsection*{Journal articles}
+
+\cvpub
+{\textbf{Ghilain Bergeron}, Horatiu Cirstea, Stephan Merz}
+{Towards a verified compiler for Distributed PlusCal (extended)}
+{\textit{Submitted} to Journal of Logical and Algebraic Methods in Programming}
+{2026}
+{}
+
+\subsection*{Conference and workshop papers}
+
+\cvpub
+{\textbf{Ghilain Bergeron}, Florent Krasnopol, Sophie Tourret}
+{Formalizing Splitting in Isabelle/HOL}
+{16th International Conference on Interactive Theorem Proving (ITP)}
+{2025}
+{https://doi.org/10.4230/LIPIcs.ITP.2025.22}
+
+\cvpub
+{\textbf{Ghilain Bergeron}, Horatiu Cirstea, Stephan Merz}
+{Towards a verified compiler for Distributed PlusCal}
+{11th International Workshop on Rewriting Techniques for Program Transformations and Evaluation (WPTE)}
+{2025}
+{https://hal.science/hal-05329156/}
+
+\cvpub
+{\textbf{Ghilain Bergeron}, Stéphane Glondu, Sophie Tourret}
+{HOL Light to Isabelle/HOL translation, rebooted}
+{Isabelle Workshop}
+{2024}
+{https://members.loria.fr/sophie.tourret/papers/isabelle24translation.pdf}
+
+\subsection*{Preprints / submitted}
+
+\cvpub
+{\textbf{Ghilain Bergeron}}
+{Encoding Network PlusCal into the Join Calculus}
+{\textit{Submitted}}
+{2026}
+{}
+
+\cvpub
+{\textbf{Ghilain Bergeron}, Vincent Trélat}
+{BARReL: A modern backend for Atelier B in Lean}
+{\textit{Submitted}}
+{2026}
+{}
+
+% ── Talks \& presentations ───────────────────────────────────
+\section{Talks \& Presentations}
+
+\begin{cvtimeline}
+	\cventry{Nov 2025}
+	{Sémantique Dénotationnelle, espaces métriques et Go}
+	{Journées LVP du GDR SciLog du CNRS}
+	{}
+	{}
+
+	\cventry{Sep 2025}
+	{Towards a verified compiler for Distributed PlusCal}
+	{VeriDis retreat}
+	{}
+	{}
+
+	\cventry{Jul 2025}
+	{Towards a verified compiler for Distributed PlusCal}
+	{11th International Workshop on Rewriting Techniques for Program Transformations and Evaluation (WPTE)}
+	{}
+	{}
+
+	\cventry{Nov 2024}
+	{Compilation vérifiée de spécifications d'algorithmes distribués}
+	{Journées LVP du GDR SciLog du CNRS}
+	{}
+	{}
+
+	\cventry{Aug 2024}
+	{An encoding of Distributed PlusCal in the Join Calculus}
+	{VINO'24}
+	{}
+	{}
+
+	\cvlastentry{Jun 2024}
+	{An encoding of Distributed PlusCal in the Join Calculus}
+	{VeriDis retreat}
+	{}
+	{}
+\end{cvtimeline}
+
+
+% ── Reviews ────────────────────────────────────────────────
+\section{Reviews}
+
+\subsection*{Subreviewer}
+
+\begin{cvtimeline}
+	\cventry{2026}
+	{Theoretical Aspects of Software Engineering Conference (TASE)}
+	{}{}{}
+
+	\cvlastentry{2026}
+	{Journées Francophones des Langages Applicatifs (JFLA)}
+	{}{}{}
+\end{cvtimeline}
+
+% ── Teaching ────────────────────────────────────────────────
+\section{Teaching}
+
+\begin{cvtimeline}
+	\cventry{2023 -- 2025}
+	{Teaching assistant --- 2\textsuperscript{nd} year of master's degree in computer science}
+	{University of Lorraine --- Télécom Nancy}
+	{}
+	{\begin{itemize}
+			\item Functional programming course in Haskell.
+		\end{itemize}}
+
+	\cvlastentry{2024 -- 2025}
+	{Internship supervision --- 1\textsuperscript{st} year of master's degree in computer science}
+	{University of Lorraine --- \'Ecole des Mines de Nancy}
+	{}
+	{\begin{itemize}
+			\item Thomas AROCENA \newline
+			      Writing and mechanizing an operational semantics for eBPF in the Lean 4 proof assistant.
+		\end{itemize}}
+\end{cvtimeline}
+
+% % ── References ──────────────────────────────────────────────
+% \section{References}
+
+% Available upon request.
+
+\end{document}

@@ -1,0 +1,5 @@
+noIndentBlock:
+  disable:
+    begin: '%\hlatexindent_disable'
+    end: '%\hlatexindent_enable'
+    lookForThis: 1
