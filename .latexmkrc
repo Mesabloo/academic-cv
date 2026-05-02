@@ -11,4 +11,4 @@ $clean_ext = 'synctex.gz synctex(busy) run.xml .aux .bbl .bcf .blg ' .
 $aux_dir = 'build/';
 $out_dir = 'build/';
 
-@default_files = ('thesis.tex');
+@default_files = ('resume.tex');
